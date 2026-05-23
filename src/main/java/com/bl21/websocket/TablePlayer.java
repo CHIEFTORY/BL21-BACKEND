@@ -213,6 +213,8 @@ public class TablePlayer {
 
         currentBet = 0L;
 
+        clearRoundResult();
+
         hands.clear();
 
         hands.add(new Hand());

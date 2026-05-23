@@ -146,8 +146,6 @@ public class PrivateTableSocketController {
 
         if (roundFinished) {
             privateTableHistoryService.saveIfNeeded(table);
-
-            table.resetRound();
         }
     }
 }

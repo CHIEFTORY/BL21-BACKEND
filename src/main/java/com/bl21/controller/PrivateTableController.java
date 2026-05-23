@@ -216,6 +216,8 @@ public class PrivateTableController {
         PrivateTable table =
                 tableManager.getTable(tableId);
 
+        table.resetFinishedRoundIfNeeded();
+
         TablePlayer player =
                 table.getPlayers()
                         .stream()
@@ -381,8 +383,6 @@ public class PrivateTableController {
 
         if (roundFinished) {
             privateTableHistoryService.saveIfNeeded(table);
-
-            table.resetRound();
         }
 
         return response;

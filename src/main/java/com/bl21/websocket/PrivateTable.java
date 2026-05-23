@@ -288,6 +288,10 @@ public class PrivateTable {
 
             player.clearSettledBets();
         }
+
+        currentPlayerTurn = 0;
+        roundStarted = false;
+        countdownStarted = false;
     }
 
     private void settlePlayerHand(TablePlayer player, int handIndex, double multiplier) {
@@ -361,6 +365,17 @@ public class PrivateTable {
         for (TablePlayer player : players) {
 
             player.resetForNextRound();
+        }
+    }
+
+    public boolean hasFinishedRound() {
+        return players.stream()
+                .anyMatch(player -> player.getRoundResult() != null);
+    }
+
+    public void resetFinishedRoundIfNeeded() {
+        if (hasFinishedRound()) {
+            resetRound();
         }
     }
 
