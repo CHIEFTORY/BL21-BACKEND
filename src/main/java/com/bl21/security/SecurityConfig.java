@@ -78,7 +78,7 @@ public class SecurityConfig {
                 List.of(
                         "http://localhost:*",
                         "http://127.0.0.1:*",
-                        "https://lightgrey-wombat-434219.hostingersite.com"
+                        "https://seashell-tiger-842483.hostingersite.com"
                 )
         );
 
