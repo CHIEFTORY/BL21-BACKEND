@@ -2,17 +2,17 @@ package com.bl21.websocket;
 
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class PrivateTableManager {
 
     private final Map<String, PrivateTable> tables =
-            new HashMap<>();
+            new ConcurrentHashMap<>();
 
-    public PrivateTable createTable(
+    public synchronized PrivateTable createTable(
             String hostUsername,
             Long buyIn
     ) {
@@ -50,7 +50,7 @@ public class PrivateTableManager {
 
         return table;
     }
-    public PrivateTable joinTable(
+    public synchronized PrivateTable joinTable(
             String tableId,
             String username
     ) {
@@ -58,12 +58,7 @@ public class PrivateTableManager {
         PrivateTable table =
                 getTable(tableId);
 
-        table.getPlayers().add(
-                new TablePlayer(
-                        username,
-                        table.getBuyIn()
-                )
-        );
+        table.addPlayer(username);
 
         return table;
     }

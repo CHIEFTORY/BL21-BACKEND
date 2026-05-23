@@ -9,6 +9,8 @@ import java.util.Map;
 
 public class PrivateTable {
 
+    private static final int MAX_PLAYERS = 5;
+
     private String tableId;
 
     private String hostUsername;
@@ -58,6 +60,36 @@ public class PrivateTable {
         );
 
 
+    }
+
+    public void addPlayer(String username) {
+
+        if (hasPlayer(username)) {
+            throw new RuntimeException("Player already in table");
+        }
+
+        if (players.size() >= MAX_PLAYERS) {
+            throw new RuntimeException("Table is full");
+        }
+
+        if (roundStarted) {
+            throw new RuntimeException("Round already started");
+        }
+
+        players.add(
+                new TablePlayer(
+                        username,
+                        buyIn
+                )
+        );
+    }
+
+    public boolean hasPlayer(String username) {
+        return players.stream()
+                .anyMatch(player ->
+                        player.getUsername()
+                                .equals(username)
+                );
     }
     public void playDealerTurn() {
 

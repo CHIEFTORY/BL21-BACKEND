@@ -54,6 +54,12 @@ public class PrivateTableController {
                         .orElseThrow(() ->
                                 new RuntimeException("User not found"));
 
+        Long buyIn = request.getBuyIn();
+
+        if (buyIn == null || buyIn < 100) {
+            throw new RuntimeException("Invalid buy-in");
+        }
+
         if (user.getCoins() < request.getBuyIn()) {
 
             throw new RuntimeException(
@@ -62,7 +68,7 @@ public class PrivateTableController {
         }
 
         user.setCoins(
-                user.getCoins() - request.getBuyIn()
+                user.getCoins() - buyIn
         );
 
         userRepository.save(user);
@@ -70,7 +76,7 @@ public class PrivateTableController {
         PrivateTable table =
                 tableManager.createTable(
                         username,
-                        request.getBuyIn()
+                        buyIn
                 );
 
         return new PrivateTableResponse(
@@ -103,6 +109,14 @@ public class PrivateTableController {
         PrivateTable existingTable =
                 tableManager.getTable(tableId);
 
+        existingTable.resetFinishedRoundIfNeeded();
+
+        if (existingTable.isRoundStarted()) {
+            throw new RuntimeException(
+                    "Round already started"
+            );
+        }
+
         if (user.getCoins() < existingTable.getBuyIn()) {
 
             throw new RuntimeException(
@@ -117,10 +131,24 @@ public class PrivateTableController {
         userRepository.save(user);
 
         PrivateTable table =
-                tableManager.joinTable(
-                        tableId,
-                        username
-                );
+                null;
+
+        try {
+            table =
+                    tableManager.joinTable(
+                            tableId,
+                            username
+                    );
+        } catch (RuntimeException error) {
+            user.setCoins(
+                    user.getCoins()
+                            + existingTable.getBuyIn()
+            );
+
+            userRepository.save(user);
+
+            throw error;
+        }
 
         return new PrivateTableResponse(
 

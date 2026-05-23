@@ -28,6 +28,10 @@ public class TablePlayer {
             Long stack
     ) {
 
+        if (stack == null || stack <= 0) {
+            throw new RuntimeException("Invalid player stack");
+        }
+
         this.username = username;
         this.stack = stack;
         this.hands.add(new Hand());
