@@ -86,6 +86,9 @@ public class PrivateTableController {
                 table.getHostUsername(),
 
                 table.getPlayers()
+                        .stream()
+                        .map(TablePlayer::getUsername)
+                        .toList()
         );
     }
 
@@ -157,6 +160,9 @@ public class PrivateTableController {
                 table.getHostUsername(),
 
                 table.getPlayers()
+                        .stream()
+                        .map(TablePlayer::getUsername)
+                        .toList()
         );
     }
 
@@ -444,6 +450,9 @@ public class PrivateTableController {
                 table.getHostUsername(),
 
                 table.getPlayers()
+                        .stream()
+                        .map(TablePlayer::getUsername)
+                        .toList()
         );
     }
 }

@@ -1,9 +1,6 @@
 package com.bl21.dto.response;
 
-import com.bl21.websocket.TablePlayer;
-
 import java.util.List;
-import java.util.Set;
 
 public class PrivateTableResponse {
 
@@ -11,12 +8,12 @@ public class PrivateTableResponse {
 
     private String hostUsername;
 
-    private List<TablePlayer> players;
+    private List<String> players;
 
     public PrivateTableResponse(
             String tableId,
             String hostUsername,
-            List<TablePlayer> players
+            List<String> players
     ) {
 
         this.tableId = tableId;
@@ -32,7 +29,7 @@ public class PrivateTableResponse {
         return hostUsername;
     }
 
-    public List<TablePlayer> getPlayers() {
+    public List<String> getPlayers() {
         return players;
     }
 }
