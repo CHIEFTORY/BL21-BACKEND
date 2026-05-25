@@ -1,6 +1,7 @@
 package com.bl21.controller;
 
 import com.bl21.blackjack.engine.BlackjackEngine;
+import com.bl21.dto.request.StartGameRequest;
 import com.bl21.dto.response.GameStateResponse;
 import com.bl21.entity.Card;
 import com.bl21.entity.Hand;
@@ -123,6 +124,39 @@ class GameControllerSplitTests {
         forcePair(game);
 
         assertThrows(RuntimeException.class, () -> controller.split(gameId));
+    }
+
+    @Test
+    void startingSoloGameAgainReturnsActiveHandInsteadOfRedealing() {
+        GameManager gameManager = new GameManager();
+        UserRepository userRepository = mock(UserRepository.class);
+        GameResultService resultService = mock(GameResultService.class);
+        GameController controller = new GameController(gameManager, resultService, userRepository);
+        User user = new User();
+        user.setUsername("maurix");
+        user.setCoins(1000L);
+        StartGameRequest request = new StartGameRequest();
+        request.setBet(100L);
+
+        when(userRepository.findByUsername("maurix")).thenReturn(Optional.of(user));
+        SecurityContextHolder.getContext()
+                .setAuthentication(new TestingAuthenticationToken("maurix", "password"));
+
+        GameStateResponse first = controller.startGame(request);
+        int remainingCards = first.getShoe().getRemainingCards();
+
+        GameStateResponse second = controller.startGame(request);
+
+        assertEquals(first.getGameId(), second.getGameId());
+        assertEquals(remainingCards, second.getShoe().getRemainingCards());
+        assertEquals(
+                first.getPlayerHands().get(0).getCards().get(0).getRank(),
+                second.getPlayerHands().get(0).getCards().get(0).getRank()
+        );
+        assertEquals(
+                first.getPlayerHands().get(0).getCards().get(1).getSuit(),
+                second.getPlayerHands().get(0).getCards().get(1).getSuit()
+        );
     }
 
     private void forcePair(BlackjackEngine game) {

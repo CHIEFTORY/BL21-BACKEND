@@ -48,6 +48,25 @@ public class GameController {
 
         User user = getCurrentUser();
 
+        String activeGameId =
+                gameManager.getActiveSoloGameId(
+                        user.getUsername()
+                );
+
+        if (activeGameId != null) {
+            BlackjackEngine activeGame =
+                    gameManager.getGame(activeGameId);
+
+            return toResponse(
+                    activeGameId,
+                    activeGame,
+                    gameManager.getTotalExposure(activeGameId),
+                    null,
+                    user,
+                    null
+            );
+        }
+
         if (user.getCoins() < bet) {
 
             throw new RuntimeException("Not enough coins");

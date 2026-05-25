@@ -25,6 +25,12 @@ public class GameManager {
     private final Map<String, String> activeGameModes =
             new HashMap<>();
 
+    private final Map<String, String> gameOwners =
+            new HashMap<>();
+
+    private final Map<String, String> activeSoloGameByUser =
+            new HashMap<>();
+
     private final Map<String, Shoe> soloShoesByUser =
             new HashMap<>();
 
@@ -51,6 +57,14 @@ public class GameManager {
             Long bet
     ) {
 
+        String activeGameId =
+                activeSoloGameByUser.get(username);
+
+        if (activeGameId != null
+                && activeGames.containsKey(activeGameId)) {
+            return activeGameId;
+        }
+
         Shoe shoe =
                 soloShoesByUser.computeIfAbsent(
                         username,
@@ -70,6 +84,10 @@ public class GameManager {
         activeHandBets.put(gameId, new ArrayList<>(List.of(bet)));
 
         activeGameModes.put(gameId, "SOLO");
+
+        gameOwners.put(gameId, username);
+
+        activeSoloGameByUser.put(username, gameId);
 
         return gameId;
     }
@@ -124,6 +142,8 @@ public class GameManager {
 
                 activeGameModes.put(gameId, "TRAINER");
 
+                gameOwners.put(gameId, username);
+
                 return gameId;
             }
         }
@@ -161,7 +181,28 @@ public class GameManager {
         return game;
     }
 
+    public String getActiveSoloGameId(String username) {
+
+        String gameId =
+                activeSoloGameByUser.get(username);
+
+        if (gameId != null
+                && activeGames.containsKey(gameId)) {
+            return gameId;
+        }
+
+        return null;
+    }
+
     public void removeGame(String gameId) {
+
+        String username =
+                gameOwners.remove(gameId);
+
+        if ("SOLO".equals(activeGameModes.get(gameId))
+                && username != null) {
+            activeSoloGameByUser.remove(username, gameId);
+        }
 
         activeGames.remove(gameId);
 
