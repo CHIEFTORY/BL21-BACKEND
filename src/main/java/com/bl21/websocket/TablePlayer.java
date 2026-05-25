@@ -112,6 +112,19 @@ public class TablePlayer {
         clearRoundResult();
     }
 
+    public void cancelRoundEntry() {
+
+        stack += currentBet;
+
+        currentBet = 0L;
+
+        handBets.clear();
+
+        ready = false;
+
+        clearRoundResult();
+    }
+
     public void winBet(double multiplier) {
 
         long winnings =

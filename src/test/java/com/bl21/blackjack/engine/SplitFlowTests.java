@@ -158,6 +158,40 @@ class SplitFlowTests {
     }
 
     @Test
+    void privateTableEntryCanBeCancelledBeforeRoundStarts() {
+        PrivateTable table = new PrivateTable("table-1", "maurix", 1000L);
+        TablePlayer player = table.getPlayers().get(0);
+
+        player.placeBet(200L);
+        player.setReady(true);
+
+        player.cancelRoundEntry();
+        table.updateCountdownState();
+
+        assertEquals(1000L, player.getStack());
+        assertEquals(0L, player.getCurrentBet());
+        assertFalse(player.isReady());
+        assertFalse(table.isCountdownStarted());
+    }
+
+    @Test
+    void privateTableEntryCanBeChangedBeforeRoundStarts() {
+        TablePlayer player = new TablePlayer("maurix", 1000L);
+
+        player.placeBet(200L);
+        player.setReady(true);
+        player.cancelRoundEntry();
+        player.placeBet(500L);
+        player.setReady(true);
+
+        assertEquals(500L, player.getStack());
+        assertEquals(500L, player.getCurrentBet());
+        assertEquals(500L, player.getHandBet(0));
+        assertEquals(1, player.getHandBets().size());
+        assertFalse(player.getHands().isEmpty());
+    }
+
+    @Test
     void privateTableSplitDoubleAndResolveKeepsPerHandFlow() {
         PrivateTable table = new PrivateTable("table-1", "maurix", 1000L);
         TablePlayer player = table.getPlayers().get(0);

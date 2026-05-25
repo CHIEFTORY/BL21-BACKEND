@@ -51,10 +51,7 @@ public class PrivateTableHistoryService {
 
             gameResultService.saveHistory(
                     user,
-                    player.getHands()
-                            .stream()
-                            .map(this::formatHand)
-                            .collect(Collectors.joining(" | ")),
+                    formatPlayerHands(player),
                     dealerHand,
                     player.getRoundResult(),
                     coinsChange,
@@ -70,5 +67,27 @@ public class PrivateTableHistoryService {
                 .stream()
                 .map(Card::toString)
                 .collect(Collectors.joining(", "));
+    }
+
+    private String formatPlayerHands(TablePlayer player) {
+        String[] results =
+                player.getRoundResult() == null
+                        ? new String[0]
+                        : player.getRoundResult().split("\\s*/\\s*");
+
+        return java.util.stream.IntStream
+                .range(0, player.getHands().size())
+                .mapToObj(index -> {
+                    String result =
+                            index < results.length
+                                    ? results[index]
+                                    : "-";
+
+                    return "Mano " + (index + 1)
+                            + " [apuesta " + player.getHandBet(index)
+                            + ", resultado " + result + "]: "
+                            + formatHand(player.getHands().get(index));
+                })
+                .collect(Collectors.joining(" | "));
     }
 }

@@ -312,12 +312,51 @@ public class PrivateTableController {
                         );
 
         if (player.getCurrentBet() > 0) {
-            throw new RuntimeException("Player already entered this round");
+            player.cancelRoundEntry();
         }
 
         player.placeBet(amount);
 
         player.setReady(true);
+
+        table.updateCountdownState();
+
+        return PrivateTableMapper.toStateResponse(table);
+    }
+
+    @PostMapping("/{tableId}/cancel-entry")
+    public PrivateTableStateResponse cancelRoundEntry(
+            @PathVariable String tableId
+    ) {
+
+        String username =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName();
+
+        PrivateTable table =
+                tableManager.getTable(tableId);
+
+        if (table.isRoundStarted()) {
+            throw new RuntimeException("Round already started");
+        }
+
+        TablePlayer player =
+                table.getPlayers()
+                        .stream()
+                        .filter(p ->
+                                p.getUsername()
+                                        .equals(username)
+                        )
+                        .findFirst()
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Player not found"
+                                )
+                        );
+
+        player.cancelRoundEntry();
 
         table.updateCountdownState();
 
