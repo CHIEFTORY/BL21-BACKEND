@@ -94,7 +94,8 @@ public class PrivateTableController {
 
     @PostMapping("/{tableId}/join")
     public PrivateTableResponse joinTable(
-            @PathVariable String tableId
+            @PathVariable String tableId,
+            @RequestBody(required = false) Map<String, Long> body
     ) {
 
         String username =
@@ -114,13 +115,26 @@ public class PrivateTableController {
 
         existingTable.resetFinishedRoundIfNeeded();
 
+        Long buyIn =
+                body != null
+                        ? body.get("buyIn")
+                        : null;
+
+        if (buyIn == null) {
+            buyIn = existingTable.getBuyIn();
+        }
+
+        if (buyIn < 100) {
+            throw new RuntimeException("Invalid buy-in");
+        }
+
         if (existingTable.isRoundStarted()) {
             throw new RuntimeException(
                     "Round already started"
             );
         }
 
-        if (user.getCoins() < existingTable.getBuyIn()) {
+        if (user.getCoins() < buyIn) {
 
             throw new RuntimeException(
                     "Not enough coins"
@@ -128,7 +142,7 @@ public class PrivateTableController {
         }
 
         user.setCoins(
-                user.getCoins() - existingTable.getBuyIn()
+                user.getCoins() - buyIn
         );
 
         userRepository.save(user);
@@ -140,12 +154,13 @@ public class PrivateTableController {
             table =
                     tableManager.joinTable(
                             tableId,
-                            username
+                            username,
+                            buyIn
                     );
         } catch (RuntimeException error) {
             user.setCoins(
                     user.getCoins()
-                            + existingTable.getBuyIn()
+                            + buyIn
             );
 
             userRepository.save(user);
@@ -164,6 +179,71 @@ public class PrivateTableController {
                         .map(TablePlayer::getUsername)
                         .toList()
         );
+    }
+
+    @PostMapping("/{tableId}/reload-stack")
+    public PrivateTableStateResponse reloadStack(
+            @PathVariable String tableId,
+            @RequestBody Map<String, Long> body
+    ) {
+
+        String username =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName();
+
+        Long amount =
+                body.get("amount");
+
+        if (amount == null || amount < 100) {
+            throw new RuntimeException("Invalid reload amount");
+        }
+
+        User user =
+                userRepository
+                        .findByUsername(username)
+                        .orElseThrow(() ->
+                                new RuntimeException("User not found"));
+
+        PrivateTable table =
+                tableManager.getTable(tableId);
+
+        table.resetFinishedRoundIfNeeded();
+
+        if (table.isRoundStarted()) {
+            throw new RuntimeException("Cannot reload during an active round");
+        }
+
+        if (user.getCoins() < amount) {
+            throw new RuntimeException("Not enough coins");
+        }
+
+        TablePlayer player =
+                table.getPlayers()
+                        .stream()
+                        .filter(p ->
+                                p.getUsername()
+                                        .equals(username)
+                        )
+                        .findFirst()
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Player not found"
+                                )
+                        );
+
+        user.setCoins(
+                user.getCoins() - amount
+        );
+
+        player.addStack(amount);
+
+        userRepository.save(user);
+
+        table.updateCountdownState();
+
+        return PrivateTableMapper.toStateResponse(table);
     }
 
     @GetMapping("/{tableId}/state")

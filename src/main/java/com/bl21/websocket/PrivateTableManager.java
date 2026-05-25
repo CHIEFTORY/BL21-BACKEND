@@ -52,13 +52,14 @@ public class PrivateTableManager {
     }
     public synchronized PrivateTable joinTable(
             String tableId,
-            String username
+            String username,
+            Long buyIn
     ) {
 
         PrivateTable table =
                 getTable(tableId);
 
-        table.addPlayer(username);
+        table.addPlayer(username, buyIn);
 
         return table;
     }

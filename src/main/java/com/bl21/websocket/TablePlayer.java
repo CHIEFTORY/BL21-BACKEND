@@ -72,6 +72,15 @@ public class TablePlayer {
         this.stack = stack;
     }
 
+    public void addStack(Long amount) {
+
+        if (amount == null || amount <= 0) {
+            throw new RuntimeException("Reload amount must be greater than zero");
+        }
+
+        stack += amount;
+    }
+
     public Long getCurrentBet() {
         return currentBet;
     }

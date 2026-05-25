@@ -62,7 +62,7 @@ public class PrivateTable {
 
     }
 
-    public void addPlayer(String username) {
+    public void addPlayer(String username, Long stack) {
 
         if (hasPlayer(username)) {
             throw new RuntimeException("Player already in table");
@@ -79,7 +79,7 @@ public class PrivateTable {
         players.add(
                 new TablePlayer(
                         username,
-                        buyIn
+                        stack
                 )
         );
     }
