@@ -173,6 +173,9 @@ public class TablePlayer {
         boolean splitAces = hand.getCards().get(0).getRank() == Rank.ACE;
         newHand.addCard(hand.getCards().remove(1));
 
+        hand.markSplitHand();
+        newHand.markSplitHand();
+
         hand.addCard(shoe.drawCard());
         newHand.addCard(shoe.drawCard());
 

@@ -127,7 +127,7 @@ public class PrivateTableSocketController {
 
         if (table.allPlayersFinished()) {
 
-            table.playDealerTurn();
+            table.playDealerTurnIfNeeded();
 
             table.resolveRound();
 

@@ -172,6 +172,9 @@ public class BlackjackEngine {
 
         newHand.addCard(originalHand.getCards().remove(1));
 
+        originalHand.markSplitHand();
+        newHand.markSplitHand();
+
         originalHand.addCard(shoe.drawCard());
 
         newHand.addCard(shoe.drawCard());
@@ -237,9 +240,17 @@ public class BlackjackEngine {
     private void finishDealerTurn() {
 
         gameStatus = GameStatus.DEALER_TURN;
-        dealerEngine.playDealerHand(dealerHand, shoe);
+
+        if (dealerShouldPlay()) {
+            dealerEngine.playDealerHand(dealerHand, shoe);
+        }
 
         gameStatus = GameStatus.FINISHED;
+    }
+
+    private boolean dealerShouldPlay() {
+        return playerHands.stream()
+                .anyMatch(hand -> !hand.isBust() && !hand.isBlackjack());
     }
 
     public int getCurrentHandIndex() {
@@ -254,6 +265,8 @@ public class BlackjackEngine {
 
         if (source.isSplitAces()) {
             copy.markSplitAces();
+        } else if (source.isSplitHand()) {
+            copy.markSplitHand();
         }
 
         return copy;

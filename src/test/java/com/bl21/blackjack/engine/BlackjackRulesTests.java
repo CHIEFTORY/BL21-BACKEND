@@ -46,6 +46,19 @@ class BlackjackRulesTests {
         assertEquals(GameStatus.FINISHED, game.getGameStatus());
     }
 
+    @Test
+    void twentyOneAfterSplitIsNotNaturalBlackjack() {
+        BlackjackEngine game = new BlackjackEngine();
+        replaceHand(game.getCurrentHand(), Rank.KING, Rank.KING);
+        replaceHand(game.getDealerHand(), Rank.TEN, Rank.NINE);
+
+        game.playerSplit(0);
+        replaceHand(game.getPlayerHands().get(0), Rank.ACE, Rank.KING);
+
+        assertFalse(game.getPlayerHands().get(0).isBlackjack());
+        assertEquals("PLAYER WINS", game.resolveGame(0));
+    }
+
     private void replaceHand(Hand hand, Rank first, Rank second) {
         hand.getCards().clear();
         hand.addCard(card(first));

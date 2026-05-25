@@ -98,6 +98,49 @@ class SplitFlowTests {
     }
 
     @Test
+    void privateTableTwentyOneAfterSplitPaysAsNormalWin() {
+        PrivateTable table = new PrivateTable("table-1", "maurix", 1000L);
+        TablePlayer player = table.getPlayers().get(0);
+
+        player.placeBet(100L);
+        player.setReady(true);
+        player.prepareRoundHand();
+        player.getHand().addCard(card(Rank.KING));
+        player.getHand().addCard(card(Rank.KING));
+        player.splitHand(table.getShoe());
+
+        replaceHand(player.getHands().get(0), Rank.ACE, Rank.KING);
+        replaceHand(player.getHands().get(1), Rank.TEN, Rank.SEVEN);
+        replaceHand(table.getDealerHand(), Rank.TEN, Rank.NINE);
+
+        table.resolveRound();
+
+        assertEquals("WIN / LOSE", player.getRoundResult());
+        assertEquals(1000L, player.getStack());
+    }
+
+    @Test
+    void privateTableDealerDoesNotDrawWhenEveryPlayerBusts() {
+        PrivateTable table = new PrivateTable("table-1", "maurix", 1000L);
+        TablePlayer player = table.getPlayers().get(0);
+
+        player.placeBet(100L);
+        player.setReady(true);
+        player.prepareRoundHand();
+        player.getHand().addCard(card(Rank.KING));
+        player.getHand().addCard(card(Rank.QUEEN));
+        player.getHand().addCard(card(Rank.TWO));
+        replaceHand(table.getDealerHand(), Rank.FIVE, Rank.SIX);
+
+        int remainingCards = table.getShoe().remainingCards();
+
+        table.playDealerTurnIfNeeded();
+
+        assertEquals(remainingCards, table.getShoe().remainingCards());
+        assertEquals(2, table.getDealerHand().getCards().size());
+    }
+
+    @Test
     void privateTableSplitDoubleAndResolveKeepsPerHandFlow() {
         PrivateTable table = new PrivateTable("table-1", "maurix", 1000L);
         TablePlayer player = table.getPlayers().get(0);

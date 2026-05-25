@@ -99,6 +99,19 @@ public class PrivateTable {
         );
     }
 
+    public void playDealerTurnIfNeeded() {
+
+        if (dealerShouldPlay()) {
+            playDealerTurn();
+        }
+    }
+
+    private boolean dealerShouldPlay() {
+        return getActiveRoundPlayers().stream()
+                .flatMap(player -> player.getHands().stream())
+                .anyMatch(hand -> !hand.isBust() && !hand.isBlackjack());
+    }
+
     public boolean isCountdownStarted() {
         return countdownStarted;
     }

@@ -9,6 +9,8 @@ public class Hand {
 
     private boolean splitAces = false;
 
+    private boolean splitHand = false;
+
     public Hand() {
         this.cards = new ArrayList<>();
     }
@@ -44,7 +46,7 @@ public class Hand {
     }
 
     public boolean isBlackjack() {
-        return cards.size() == 2 && calculateValue() == 21 && !splitAces;
+        return cards.size() == 2 && calculateValue() == 21 && !splitHand;
     }
 
     public boolean isBust() {
@@ -95,7 +97,16 @@ public class Hand {
         return splitAces;
     }
 
+    public boolean isSplitHand() {
+        return splitHand;
+    }
+
+    public void markSplitHand() {
+        splitHand = true;
+    }
+
     public void markSplitAces() {
+        markSplitHand();
         splitAces = true;
     }
 
