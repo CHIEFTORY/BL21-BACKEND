@@ -94,7 +94,7 @@ public class BlackjackEngine {
 
         hand.addCard(shoe.drawCard());
 
-        if (hand.isBust()) {
+        if (hand.isBust() || hand.isTwentyOne()) {
 
             nextHand();
         }
@@ -237,7 +237,7 @@ public class BlackjackEngine {
     private void skipLockedHands() {
 
         while (currentHandIndex < playerHands.size()
-                && playerHands.get(currentHandIndex).isLocked()) {
+                && playerHands.get(currentHandIndex).isComplete()) {
 
             currentHandIndex++;
         }

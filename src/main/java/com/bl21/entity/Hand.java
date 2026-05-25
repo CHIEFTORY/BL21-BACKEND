@@ -53,6 +53,14 @@ public class Hand {
         return calculateValue() > 21;
     }
 
+    public boolean isTwentyOne() {
+        return calculateValue() == 21;
+    }
+
+    public boolean isComplete() {
+        return isLocked() || isBlackjack() || isBust() || isTwentyOne();
+    }
+
     public boolean isSoft() {
 
         int total = 0;
@@ -90,7 +98,7 @@ public class Hand {
 
     public boolean canDouble() {
 
-        return cards.size() == 2 && !splitAces;
+        return cards.size() == 2 && !splitAces && calculateValue() < 21;
     }
 
     public boolean isSplitAces() {

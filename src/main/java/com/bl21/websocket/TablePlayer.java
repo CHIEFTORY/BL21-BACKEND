@@ -90,6 +90,10 @@ public class TablePlayer {
 
     public void placeBet(Long amount) {
 
+        if (amount == null || amount <= 0) {
+            throw new RuntimeException("Bet must be greater than zero");
+        }
+
         if (amount > stack) {
 
             throw new RuntimeException(
@@ -202,8 +206,7 @@ public class TablePlayer {
     private void skipLockedHands() {
 
         while (currentHandIndex < hands.size()
-                && (hands.get(currentHandIndex).isLocked()
-                || hands.get(currentHandIndex).isBlackjack())) {
+                && hands.get(currentHandIndex).isComplete()) {
 
             currentHandIndex++;
         }

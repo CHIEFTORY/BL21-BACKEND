@@ -60,6 +60,20 @@ class BlackjackRulesTests {
     }
 
     @Test
+    void twentyOneAfterSplitIsCompleteButNotBlackjack() {
+        Hand hand = new Hand();
+        hand.markSplitHand();
+        hand.addCard(card(Rank.ACE));
+        hand.addCard(card(Rank.KING));
+
+        assertEquals(21, hand.calculateValue());
+        assertFalse(hand.isBlackjack());
+        assertTrue(hand.isTwentyOne());
+        assertTrue(hand.isComplete());
+        assertFalse(hand.canDouble());
+    }
+
+    @Test
     void dealerDoesNotDrawWhenOnlySoloHandBusts() {
         BlackjackEngine game = new BlackjackEngine();
         replaceHand(game.getCurrentHand(), Rank.KING, Rank.QUEEN);

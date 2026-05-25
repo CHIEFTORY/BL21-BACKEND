@@ -135,6 +135,20 @@ public class TrainerService {
             );
         }
 
+        if (playerHand.isTwentyOne()) {
+            return new StrategyAdviceResponse(
+                    "STAND",
+                    "21",
+                    dealerLabel,
+                    "Llegaste a 21. La mano queda cerrada automaticamente; no debes pedir mas cartas.",
+                    true,
+                    estimateDealerBustChance(dealerValue),
+                    100,
+                    100,
+                    buildTerminalScores()
+            );
+        }
+
         MoveAction correctMove = getCorrectMove(playerHand, dealerCard);
         String handLabel = buildHandLabel(playerHand);
         int dealerBustChance = estimateDealerBustChance(dealerValue);

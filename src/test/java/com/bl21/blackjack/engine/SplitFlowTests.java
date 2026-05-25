@@ -141,6 +141,23 @@ class SplitFlowTests {
     }
 
     @Test
+    void privateTableTwentyOneHandIsSkippedAutomatically() {
+        PrivateTable table = new PrivateTable("table-1", "maurix", 1000L);
+        TablePlayer player = table.getPlayers().get(0);
+
+        player.placeBet(100L);
+        player.setReady(true);
+        player.prepareRoundHand();
+        player.getHand().markSplitHand();
+        player.getHand().addCard(card(Rank.ACE));
+        player.getHand().addCard(card(Rank.KING));
+
+        player.skipAutomaticHands();
+
+        assertFalse(player.hasPlayableHand());
+    }
+
+    @Test
     void privateTableSplitDoubleAndResolveKeepsPerHandFlow() {
         PrivateTable table = new PrivateTable("table-1", "maurix", 1000L);
         TablePlayer player = table.getPlayers().get(0);

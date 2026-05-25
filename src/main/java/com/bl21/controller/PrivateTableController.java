@@ -273,6 +273,57 @@ public class PrivateTableController {
         return "Bet placed successfully";
     }
 
+    @PostMapping("/{tableId}/enter-round")
+    public PrivateTableStateResponse enterRound(
+            @PathVariable String tableId,
+            @RequestBody Map<String, Long> body
+    ) {
+
+        String username =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName();
+
+        Long amount =
+                body.get("amount");
+
+        PrivateTable table =
+                tableManager.getTable(tableId);
+
+        table.resetFinishedRoundIfNeeded();
+
+        if (table.isRoundStarted()) {
+            throw new RuntimeException("Round already started");
+        }
+
+        TablePlayer player =
+                table.getPlayers()
+                        .stream()
+                        .filter(p ->
+                                p.getUsername()
+                                        .equals(username)
+                        )
+                        .findFirst()
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Player not found"
+                                )
+                        );
+
+        if (player.getCurrentBet() > 0) {
+            throw new RuntimeException("Player already entered this round");
+        }
+
+        player.placeBet(amount);
+
+        player.setReady(true);
+
+        table.updateCountdownState();
+
+        return PrivateTableMapper.toStateResponse(table);
+    }
+
     @PostMapping("/{tableId}/ready")
     public String readyPlayer(
             @PathVariable String tableId
@@ -352,7 +403,8 @@ public class PrivateTableController {
                                         .drawCard()
                         );
 
-                if (currentPlayer.getHand().isBust()) {
+                if (currentPlayer.getHand().isBust()
+                        || currentPlayer.getHand().isTwentyOne()) {
 
                     table.nextTurn();
                 }

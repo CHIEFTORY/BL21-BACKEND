@@ -78,7 +78,8 @@ public class PrivateTableSocketController {
                                         .drawCard()
                         );
 
-                if (currentPlayer.getHand().isBust()) {
+                if (currentPlayer.getHand().isBust()
+                        || currentPlayer.getHand().isTwentyOne()) {
 
                     table.nextTurn();
                 }
