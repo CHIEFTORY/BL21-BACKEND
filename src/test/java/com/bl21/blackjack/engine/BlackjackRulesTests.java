@@ -59,6 +59,23 @@ class BlackjackRulesTests {
         assertEquals("PLAYER WINS", game.resolveGame(0));
     }
 
+    @Test
+    void dealerDoesNotDrawWhenOnlySoloHandBusts() {
+        BlackjackEngine game = new BlackjackEngine();
+        replaceHand(game.getCurrentHand(), Rank.KING, Rank.QUEEN);
+        replaceHand(game.getDealerHand(), Rank.FOUR, Rank.ACE);
+
+        int remainingCards = game.getShoe().remainingCards();
+
+        game.playerHit(0);
+
+        assertEquals(GameStatus.FINISHED, game.getGameStatus());
+        assertTrue(game.getPlayerHands().get(0).isBust());
+        assertEquals(remainingCards - 1, game.getShoe().remainingCards());
+        assertEquals(2, game.getDealerHand().getCards().size());
+        assertEquals("PLAYER BUSTS - DEALER WINS", game.resolveGame(0));
+    }
+
     private void replaceHand(Hand hand, Rank first, Rank second) {
         hand.getCards().clear();
         hand.addCard(card(first));

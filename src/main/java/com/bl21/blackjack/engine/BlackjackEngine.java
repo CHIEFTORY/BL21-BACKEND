@@ -211,7 +211,13 @@ public class BlackjackEngine {
 
     public Hand getCurrentHand() {
 
-        return playerHands.get(currentHandIndex);
+        int safeIndex =
+                Math.min(
+                        currentHandIndex,
+                        playerHands.size() - 1
+                );
+
+        return playerHands.get(safeIndex);
     }
 
     public void nextHand() {
