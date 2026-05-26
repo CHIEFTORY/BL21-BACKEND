@@ -2,10 +2,16 @@ package com.bl21.controller;
 
 import com.bl21.dto.request.CreateTableRequest;
 import com.bl21.dto.response.PrivateTableResponse;
+import com.bl21.entity.Card;
+import com.bl21.entity.Hand;
 import com.bl21.entity.User;
+import com.bl21.enums.Rank;
+import com.bl21.enums.Suit;
 import com.bl21.repository.UserRepository;
 import com.bl21.service.PrivateTableHistoryService;
+import com.bl21.websocket.PrivateTable;
 import com.bl21.websocket.PrivateTableManager;
+import com.bl21.websocket.TablePlayer;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -99,5 +105,36 @@ class PrivateTableEconomyTests {
                 .findFirst()
                 .orElseThrow()
                 .getStack());
+    }
+
+    @Test
+    void tableTurnSkipsPlayerWhenCurrentSplitHandIsAlreadyComplete() {
+        PrivateTable table = new PrivateTable("table", "first", 5000L);
+        table.addPlayer("second", 5000L);
+
+        TablePlayer first = table.getPlayers().get(0);
+        TablePlayer second = table.getPlayers().get(1);
+
+        first.placeBet(1000L);
+        first.setReady(true);
+        second.placeBet(1000L);
+        second.setReady(true);
+
+        first.getHands().clear();
+        first.getHands().add(hand(Rank.TEN, Rank.ACE));
+
+        second.getHands().clear();
+        second.getHands().add(hand(Rank.EIGHT, Rank.EIGHT));
+
+        table.normalizeTurn();
+
+        assertEquals("second", table.getCurrentPlayer().getUsername());
+    }
+
+    private Hand hand(Rank firstRank, Rank secondRank) {
+        Hand hand = new Hand();
+        hand.addCard(new Card(Suit.SPADES, firstRank));
+        hand.addCard(new Card(Suit.HEARTS, secondRank));
+        return hand;
     }
 }

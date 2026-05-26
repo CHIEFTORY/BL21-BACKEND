@@ -498,6 +498,9 @@ public class PrivateTableController {
                     "Round not started"
             );
         }
+
+        table.normalizeTurn();
+
         TablePlayer currentPlayer =
                 table.getCurrentPlayer();
 

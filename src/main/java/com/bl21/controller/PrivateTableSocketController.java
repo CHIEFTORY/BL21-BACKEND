@@ -49,6 +49,9 @@ public class PrivateTableSocketController {
                     "Round not started"
             );
         }
+
+        table.normalizeTurn();
+
         TablePlayer currentPlayer =
                 table.getCurrentPlayer();
 
