@@ -185,6 +185,10 @@ public class PrivateTable {
 
         skipFinishedPlayers();
     }
+
+    public void normalizeTurn() {
+        skipFinishedPlayers();
+    }
     public TablePlayer getCurrentPlayer() {
 
         List<TablePlayer> activePlayers = getActiveRoundPlayers();

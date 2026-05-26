@@ -581,6 +581,8 @@ public class PrivateTableController {
             table.resolveRound();
 
             roundFinished = true;
+        } else {
+            table.normalizeTurn();
         }
 
         PrivateTableStateResponse response =

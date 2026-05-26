@@ -58,6 +58,7 @@ public class TablePlayer {
     }
 
     public boolean hasPlayableHand() {
+        skipLockedHands();
         return currentHandIndex < hands.size();
     }
     public String getUsername() {

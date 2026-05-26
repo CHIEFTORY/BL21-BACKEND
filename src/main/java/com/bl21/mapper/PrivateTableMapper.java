@@ -14,6 +14,10 @@ public class PrivateTableMapper {
             PrivateTable table
     ) {
 
+        if (table.isRoundStarted()) {
+            table.normalizeTurn();
+        }
+
         boolean roundFinished =
                 table.getPlayers()
                         .stream()

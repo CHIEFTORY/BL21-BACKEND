@@ -133,6 +133,8 @@ public class PrivateTableSocketController {
             table.resolveRound();
 
             roundFinished = true;
+        } else {
+            table.normalizeTurn();
         }
 
         PrivateTableStateResponse response =
